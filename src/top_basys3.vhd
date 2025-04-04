@@ -95,7 +95,7 @@ architecture top_basys3_arch of top_basys3 is
         generic ( constant k_DIV : natural := 2 );
         port (  i_clk    : in std_logic;    -- basys3 clk
             i_reset  : in std_logic;    -- asynchronous
-            o_clk    : out std_logic    -- divided (slow) clock
+            o_clk    : out std_logic    
         );
 end component clock_divider;
  
