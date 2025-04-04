@@ -66,8 +66,8 @@ architecture test_bench of thunderbird_fsm_tb is
 	-- test I/O signals
 	signal w_clk : std_logic := '0';
 	signal w_reset: std_logic :='0';
-	signal w_sw: std_logic_vector (1 downto 0) := "00"; --instead of creating 2 signals for each left and right, use one
-	signal w_lights: std_logic_vector (5 downto 0):= "000000"; --should be like a pyramid
+	signal w_sw: std_logic_vector (1 downto 0) := "00"; 
+	signal w_lights: std_logic_vector (5 downto 0):= "000000"; 
 	-- constants
 	constant k_clk_period : time := 10 ns;
 begin
@@ -77,12 +77,11 @@ begin
 	   i_reset     => w_reset,
 	   i_left      => w_sw(1),
 	   i_right     => w_sw(0),
-	   o_lights_L  => w_lights(5 downto 3),--left side of the pyramid _-T
-	   o_lights_R  => w_lights(2 downto 0) --right side of the pyramid T-_
+	   o_lights_L  => w_lights(5 downto 3),
+	   o_lights_R  => w_lights(2 downto 0) 
 	   );
 	-----------------------------------------------------
 	-- PROCESSES ----------------------------------------	
-    -- Clock process ------------------------------------
     	clk_proc : process
 	begin
 		w_clk <= '0';
@@ -91,27 +90,27 @@ begin
 		wait for k_clk_period/2;
 	end process;
 	-----------------------------------------------------
-	-- Test Plan Process --------------------------------
 	sim_proc: process
 	begin
 	--Reset
 	w_reset <= '1';
 	wait for k_clk_period*1;
 		  assert w_lights = "000000" report "bad reset" severity failure;
-	w_reset <= '0'; --switch reset off
-	wait for k_clk_period*1; -- wait for rising edge
+	w_reset <= '0'; 
+	wait for k_clk_period*1; 
+	
 	--OFF State
 	w_sw <= "00";
 	wait for k_clk_period*1;
-	     assert w_lights = "000000" report "bad OFF on start" severity failure;
+	     assert w_lights = "000000" report "bad on start" severity failure;
 	--Hazards
 	w_sw <="11";
 	wait for k_clk_period*1;
-        assert w_lights = "111111" report "bad ON in hazard" severity failure;
+        assert w_lights = "111111" report "bad ON hazard" severity failure;
     wait for k_clk_period*1;
-        assert w_lights = "000000" report "bad OFF in hazard" severity failure;
+        assert w_lights = "000000" report "bad OFF hazard" severity failure;
     wait for k_clk_period*1;
-    --reset and test left transition
+    --reset and left transition
     w_reset <='1';
     wait for k_clk_period*1;
     w_reset<='0';
@@ -119,30 +118,30 @@ begin
     w_sw <= "10";
     wait for k_clk_period*1;
     wait for k_clk_period*1;
-        assert w_lights = "001000" report "bad LA on L1" severity failure;
+        assert w_lights = "001000" report "bad on L1" severity failure;
     wait for k_clk_period*1;
-        assert w_lights = "011000" report "bad LB on L2 or bad transition in L2" severity failure;
+        assert w_lights = "011000" report "bad on L2 / bad transition" severity failure;
     wait for k_clk_period*1;
-        assert w_lights = "111000" report "bad LC on L3 or bad transition in L3" severity failure;
+        assert w_lights = "111000" report "bad on L3 / bad transition" severity failure;
     wait for k_clk_period*1;
-        assert w_lights = "000000" report "bad OFF in left cycle" severity failure;
-    w_sw <= "00"; --switch it off
+        assert w_lights = "000000" report "bad OFF on left cycle" severity failure;
+    w_sw <= "00"; --switch off
     wait for k_clk_period*1;
-        assert w_lights = "000000" report "bad OFF after left cycle" severity failure;
-    --reset and test right transition
+        assert w_lights = "000000" report "bad OFF post left cycle" severity failure;
+    --reset and  right transition
     w_reset <='1';
     wait for k_clk_period*1;
     w_reset<='0';
     wait for k_clk_period*1;
     w_sw <= "01";
     wait for k_clk_period*1;
-        assert w_lights = "000001" report "bad RA on R1" severity failure;
+        assert w_lights = "000001" report "bad on R1" severity failure;
     wait for k_clk_period*1;
-        assert w_lights = "000011" report "bad RB on R2 or bad transition in R2" severity failure;
+        assert w_lights = "000011" report "bad on R2 / bad transition" severity failure;
     wait for k_clk_period*1;
-        assert w_lights = "000111" report "bad RC on R3 or bad transition in R3" severity failure;
+        assert w_lights = "000111" report "bad on R3 / bad transition" severity failure;
     wait for k_clk_period*1;
-        assert w_lights = "000000" report "bad OFF in right cycle" severity failure;
+        assert w_lights = "000000" report "bad OFF on right cycle" severity failure;
     -- check left cycle with right input in the middle
     w_sw <= "10";
     wait for k_clk_period*1;
@@ -151,7 +150,7 @@ begin
         assert w_lights = "011000" report "bad left mid cycle" severity failure;
     w_sw <= "01";
     wait for k_clk_period*1;
-        assert w_lights = "111000" report "takes right input mid left cycle" severity failure;
+        assert w_lights = "111000" report "right input, left cycle" severity failure;
     wait for k_clk_period*1;
         assert w_lights = "000000" report "failed to exit left cycle with right input" severity failure;
     -- check right cycle with left input in the middle
